@@ -22,28 +22,43 @@ public class StatementPrinter {
      * @throws RuntimeException if one of the play types is not known
      */
     public String statement() {
-        int totalAmount = 0;
-        int volumeCredits = 0;
         final StringBuilder result = new StringBuilder("Statement for "
                 + invoice.getCustomer()
                 + System.lineSeparator());
-
         for (Performance performance : invoice.getPerformances()) {
-
-            final int thisAmount = this.getAmount(performance);
-
-            volumeCredits += this.getVolumesCredits(performance);
-            // print line for this order
             result.append(String.format("  %s: %s (%s seats)%n",
                     this.getPlay(performance.getPlayID()).getName(),
-                    this.usd(thisAmount),
+                    this.usd(this.getAmount(performance)),
                     performance.getAudience()));
-
-            totalAmount += thisAmount;
         }
-        result.append(String.format("Amount owed is %s%n", this.usd(totalAmount)));
-        result.append(String.format("You earned %s credits%n", volumeCredits));
+
+        result.append(String.format("Amount owed is %s%n", this.usd(this.getTotalAmount())));
+        result.append(String.format("You earned %s credits%n", this.getTotalVolumeCredits()));
         return result.toString();
+    }
+
+    /**
+     * A helper method to get total amount.
+     * @return The total amount
+     */
+    public int getTotalAmount() {
+        int result = 0;
+        for (Performance p : invoice.getPerformances()) {
+            result += getAmount(p);
+        }
+        return result;
+    }
+
+    /**
+     * A helper method to get total volume credits.
+     * @return The total volume credits
+     */
+    public int getTotalVolumeCredits() {
+        int result = 0;
+        for (Performance performance : invoice.getPerformances()) {
+            result += this.getVolumesCredits(performance);
+        }
+        return result;
     }
 
     /**
@@ -51,7 +66,8 @@ public class StatementPrinter {
      * @param performance A performance
      * @return The base amount
      */
-    public int getAmount(Performance performance) throws RuntimeException {
+    @SuppressWarnings({"checkstyle:JavadocMethod", "checkstyle:SuppressWarnings"})
+    public int getAmount(Performance performance) {
         int result = 0;
         switch (this.getPlay(performance.getPlayID()).getType()) {
             case "tragedy":
