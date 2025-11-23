@@ -56,7 +56,7 @@ public class StatementPrinter {
     public int getTotalVolumeCredits() {
         int result = 0;
         for (Performance performance : invoice.getPerformances()) {
-            result += this.getVolumesCredits(performance);
+            result += this.getVolumeCredits(performance);
         }
         return result;
     }
@@ -103,11 +103,11 @@ public class StatementPrinter {
     }
 
     /**
-     * A helper method that get volumes credits.
+     * A helper method that get volume credits.
      * @param performance The performance object
      * @return The new credits earned
      */
-    public int getVolumesCredits(Performance performance) {
+    public int getVolumeCredits(Performance performance) {
         int result = 0;
         // add volume credits
         result += Math.max(performance.getAudience() - Constants.BASE_VOLUME_CREDIT_THRESHOLD, 0);
