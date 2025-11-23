@@ -28,8 +28,6 @@ public class StatementPrinter {
                 + invoice.getCustomer()
                 + System.lineSeparator());
 
-        final NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-
         for (Performance performance : invoice.getPerformances()) {
 
             final int thisAmount = this.getAmount(performance);
@@ -38,11 +36,12 @@ public class StatementPrinter {
             // print line for this order
             result.append(String.format("  %s: %s (%s seats)%n",
                     this.getPlay(performance.getPlayID()).getName(),
-                    format.format(thisAmount / Constants.PERCENT_FACTOR),
+                    this.usd(thisAmount),
                     performance.getAudience()));
+
             totalAmount += thisAmount;
         }
-        result.append(String.format("Amount owed is %s%n", format.format(totalAmount / Constants.PERCENT_FACTOR)));
+        result.append(String.format("Amount owed is %s%n", this.usd(totalAmount)));
         result.append(String.format("You earned %s credits%n", volumeCredits));
         return result.toString();
     }
@@ -101,5 +100,14 @@ public class StatementPrinter {
             result += performance.getAudience() / Constants.COMEDY_EXTRA_VOLUME_FACTOR;
         }
         return result;
+    }
+
+    /**
+     * A helper that converts money into usd dollar.
+     * @param result The original amount
+     * @return The string amount in usd dollar
+     */
+    public String usd(int result) {
+        return NumberFormat.getCurrencyInstance(Locale.US).format(result / Constants.PERCENT_FACTOR);
     }
 }
